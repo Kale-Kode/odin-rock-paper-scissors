@@ -1,3 +1,4 @@
+//initialise variables
 const moves = ["rock", "paper", "scissors"];
 const combinations = [
     ["paper", "rock"],
@@ -5,48 +6,56 @@ const combinations = [
     ["scissors", "paper"]
 ];
 let scores = [0, 0];
+const results = document.querySelector(".results");
 
+//get random computer choice
 function get_computer_choice(){
     let choice = moves[Math.floor(Math.random()*3)];
     return choice;
 }
 
-function get_player_choice(){
-    let choice = prompt("Your move: ");
-    choice = choice.toLowerCase();
-    return choice;
-}
-
-function playRound(p, c){
-    for (let combo of combinations){
-        if (p == combo[0] && c == combo[1]){
+//make player move and check if they win or lose
+function playerMove(move){
+    let c = get_computer_choice();
+    results.textContent = `${move} vs ${c}`;
+    for (let combo of combinations) {
+        if (combo[0] == move && combo[1] == c) {
             scores[0] += 1;
-            return `You Win! ${p} beats ${c}`;
+            return `You win!\n${move} beats ${c}`;
         }
-        else if (p == c){
-            return `Tie!`;
+        else if (move == c){
+        return "Tie!";
         }
-    }
+    };
     scores[1] += 1;
-    return `You Lose! ${c} beats ${p}`;
+    return `you lose!\n${c} beats ${move}`;
 }
 
-function game(){
-    for (let i = 0; i<5; i++){
-        let player = get_player_choice();
-        let computer = get_computer_choice();
-        console.log(`${player} vs ${computer}`);
-        console.log(playRound(player, computer));
-    }
+//play rounds
+function play(){
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach(button => button.addEventListener("click", ()=>{
+        let p = document.createElement("p");
+        p.textContent = playerMove(button.classList.value);
+        results.appendChild(p);
+        let score = document.createElement("p");
+        score.textContent = `You: ${scores[0]}\nComputer: ${scores[1]}`;
+        results.appendChild(score)
 
-    console.log(`Scores:\nYou:${scores[0]}\nComputer:${scores[1]}`);
-    if (scores[0] > scores[1]){
-        console.log("You Win!");
-    }else{
-        console.log("You Lose!");
-    }
-
-    scores = [0,0];
+        const win = document.createElement("p");
+        if (scores[0] == 5){
+            win.textContent = "You Win!";
+            results.append(win);
+            button.removeEventListener("click", this);
+            throw new Error();
+        }else if (scores[1] == 5){
+            win.textContent = "You Lose!";
+            results.append(win);
+            button.removeEventListener("click", this);
+            throw new Error();
+        }
+    }));
 }
 
-game();
+play();
+
